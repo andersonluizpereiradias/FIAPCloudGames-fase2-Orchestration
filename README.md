@@ -78,6 +78,25 @@ Painel do RabbitMQ: http://localhost:15672 (fcg/fcg123).
 
 ## Como fazer deploy no Kubernetes (Minikube)
 
+### Opcao automatizada (recomendada)
+
+Requisitos: `docker`, `minikube`, `kubectl` e `make` instalados. No Windows, rode via **Git Bash** ou **WSL** (o `make` nao existe no PowerShell puro).
+
+```bash
+cp .env.example .env   # se ainda nao fez isso para o Compose
+
+make k8s-up            # start do Minikube + build/load das 4 imagens + apply + espera os pods ficarem prontos
+make k8s-status        # ve pods, deployments, services, configmaps e secrets
+make k8s-ingress       # (opcional) habilita o Ingress e aplica o manifesto de ingress
+make k8s-down          # derruba tudo (remove o namespace fcg)
+```
+
+`make help` lista todos os comandos disponiveis. Os scripts usados pelo Makefile ficam em `scripts/k8s/` e leem os caminhos dos repos irmaos do `.env` (mesmas variaveis do Compose: `USERS_API_PATH`, etc.).
+
+O `minikube tunnel` e a edicao do arquivo de hosts (necessarios so para o Ingress) continuam manuais — ver o passo a passo abaixo.
+
+### Passo a passo manual (o que o `make k8s-up` automatiza)
+
 ```bash
 minikube start
 
