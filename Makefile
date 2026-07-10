@@ -20,7 +20,9 @@ help:
 
 k8s-start:
 	@echo "==> Iniciando o cluster Minikube"
-	minikube start
+	@echo "    (ingress fica desabilitado aqui; use 'make k8s-ingress' depois, se precisar)"
+	-minikube addons disable ingress 2>/dev/null || true
+	minikube start --wait=all
 
 k8s-build:
 	@bash scripts/k8s/build-images.sh
