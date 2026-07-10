@@ -74,6 +74,54 @@ kubectl get deployments,services,configmaps,secrets -n fcg
 kubectl port-forward service/users-api 8081:8080 -n fcg
 ```
 
+## Expor as APIs com Ingress (alternativa ao port-forward)
+
+O `port-forward` é só para teste manual (uma porta, um serviço, uma sessão). Para expor **todas** as APIs de uma vez, com um único ponto de entrada, usamos um `Ingress` (`k8s/30-ingress.yaml`), que roteia por hostname para cada Service.
+
+```bash
+# 1. Habilitar o controller de Ingress do Minikube (só uma vez por cluster)
+minikube addons enable ingress
+
+# 2. Esperar o controller ficar Running (pode levar ~1 min)
+kubectl get pods -n ingress-nginx --watch
+
+# 3. Aplicar o manifesto do Ingress (se já rodou "kubectl apply -f k8s/" antes, so isso já basta)
+kubectl apply -f k8s/30-ingress.yaml
+
+# 4. Confirmar que o Ingress recebeu um endereco
+kubectl get ingress -n fcg
+```
+
+Depois, em outro terminal (deixe rodando, exige permissao de administrador no Windows):
+
+```bash
+minikube tunnel
+```
+
+Isso expõe o controller do Ingress em `localhost:80`. Falta só resolver os hostnames: edite o arquivo de hosts do Windows (`C:\Windows\System32\drivers\etc\hosts`, como administrador) e adicione:
+
+```
+127.0.0.1 users.fcg.local
+127.0.0.1 catalog.fcg.local
+127.0.0.1 payments.fcg.local
+127.0.0.1 notifications.fcg.local
+127.0.0.1 rabbitmq.fcg.local
+```
+
+Agora cada API responde no seu hostname, na porta 80 (sem porta na URL), com as mesmas rotas de sempre:
+
+```bash
+curl -X POST http://users.fcg.local/api/users/register `
+  -H "Content-Type: application/json" `
+  -d '{"name":"Teste Ingress","email":"ingress@teste.com","password":"Senha123!"}'
+
+curl http://catalog.fcg.local/api/v1/games
+```
+
+O painel de gestão do RabbitMQ também sai pelo mesmo túnel, em `http://rabbitmq.fcg.local` (login `fcg` / `fcg123`).
+
+> **Por que por hostname e não por caminho (`/users`, `/catalog`)?** Cada API já tem seus próprios prefixos de rota (`/api/users/...`, `/api/v1/games`, etc.), diferentes entre si. Rotear por path exigiria reescrever a URL antes de repassar pro serviço (`rewrite-target`), o que complica sem necessidade aqui. Rotear por hostname mantém as rotas originais intactas — cada domínio aponta pra um Service só.
+
 ## Variaveis de ambiente por servico
 
 | Variavel | users | catalog | payments | notifications | Origem |
