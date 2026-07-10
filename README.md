@@ -23,7 +23,7 @@ Repos dos servicos:
 ## Estrutura
 
 ```
-fcg-orchestration/
+FIAPCloudGames-fase2-Orchestration/   # este repo (nome padrao do git clone)
 ├── docker-compose.yml   # RabbitMQ + Postgres(3 bancos) + 4 servicos
 ├── .env.example         # variaveis do Compose (sem valores reais)
 ├── db/init.sql          # cria catalogdb e notificationsdb
@@ -31,12 +31,38 @@ fcg-orchestration/
 └── templates/           # modelos de Dockerfile e /k8s por servico
 ```
 
-## Como rodar com Docker
+## Como clonar (layout esperado)
 
-Pre-requisito: os repos de servico devem estar como **irmaos** deste (`../fcg-users-api`, etc.).
+Clone os 5 repos na **mesma pasta pai**. O `docker-compose` assume os nomes padrao gerados pelo GitHub:
+
+```
+pasta-pai/
+├── FIAPCloudGames-fase2-Orchestration/   # este repo
+├── FIAPCloudGames-fase2-UsersAPI/
+├── FIAPCloudGames-fase2-CatalogAPI/
+├── FIAPCloudGames-fase2-PaymentsAPI/
+└── FIAPCloudGames-fase2-NotificationsAPI/
+```
 
 ```bash
-cp .env.example .env        # ajuste se quiser
+mkdir fcg-fase2 && cd fcg-fase2
+
+git clone https://github.com/andersonluizpereiradias/FIAPCloudGames-fase2-Orchestration.git
+git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-UsersAPI.git
+git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-CatalogAPI.git
+git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-PaymentsAPI.git
+git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-NotificationsAPI.git
+```
+
+> Se voce **renomeou** as pastas localmente (ex.: `fcg-users-api`), copie `.env.example` para `.env` e ajuste `USERS_API_PATH`, `CATALOG_API_PATH`, etc.
+
+## Como rodar com Docker
+
+Pre-requisito: os repos de servico devem estar como **irmaos** deste, com os nomes padrao do clone (ou caminhos customizados no `.env`).
+
+```bash
+cd FIAPCloudGames-fase2-Orchestration
+cp .env.example .env        # ajuste caminhos se renomeou pastas
 docker-compose up --build
 docker-compose ps           # todos healthy/running
 ```
@@ -54,13 +80,14 @@ Painel do RabbitMQ: http://localhost:15672 (fcg/fcg123).
 minikube start
 
 # Build + carga das 4 imagens no cluster local
-docker build -t fcg/users-api:1.0 ../fcg-users-api -f ../fcg-users-api/src/FCG.API/Dockerfile
+# (ajuste os caminhos se renomeou as pastas apos o clone)
+docker build -t fcg/users-api:1.0 ../FIAPCloudGames-fase2-UsersAPI -f ../FIAPCloudGames-fase2-UsersAPI/src/FCG.API/Dockerfile
 minikube image load fcg/users-api:1.0
-docker build -t fcg/catalog-api:1.0 ../fcg-catalog-api -f ../fcg-catalog-api/src/CatalogAPI.API/Dockerfile
+docker build -t fcg/catalog-api:1.0 ../FIAPCloudGames-fase2-CatalogAPI -f ../FIAPCloudGames-fase2-CatalogAPI/src/CatalogAPI.API/Dockerfile
 minikube image load fcg/catalog-api:1.0
-docker build -t fcg/payments-api:1.0 ../fcg-payments-api -f ../fcg-payments-api/src/FCG.API/Dockerfile
+docker build -t fcg/payments-api:1.0 ../FIAPCloudGames-fase2-PaymentsAPI -f ../FIAPCloudGames-fase2-PaymentsAPI/src/FCG.API/Dockerfile
 minikube image load fcg/payments-api:1.0
-docker build -t fcg/notifications-api:1.0 ../fcg-notifications-api -f ../fcg-notifications-api/NotificationsAPI/src/Notifications.API/Dockerfile
+docker build -t fcg/notifications-api:1.0 ../FIAPCloudGames-fase2-NotificationsAPI -f ../FIAPCloudGames-fase2-NotificationsAPI/NotificationsAPI/src/Notifications.API/Dockerfile
 minikube image load fcg/notifications-api:1.0
 
 # Aplica tudo (a numeracao garante a ordem)
