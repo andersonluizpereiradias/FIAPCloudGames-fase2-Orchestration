@@ -1,9 +1,15 @@
 # Automacao do deploy no Kubernetes (Minikube) da FCG Fase 2.
 # Uso: `make k8s-up` sobe tudo. `make help` lista os comandos.
 #
-# Requisitos: docker, minikube, kubectl, bash (Linux/Mac nativo; Windows via Git Bash ou WSL).
+# Requisitos: docker, minikube, kubectl, bash (Linux/Mac nativo; Windows via Git Bash).
 
-SHELL := /usr/bin/env bash
+ifeq ($(OS),Windows_NT)
+    BASH := "C:/Program Files/Git/bin/bash.exe"
+else
+    BASH := bash
+endif
+
+SHELL := $(BASH)
 NAMESPACE ?= fcg
 
 .PHONY: help k8s-start k8s-build k8s-deploy k8s-up k8s-status k8s-ingress k8s-down
@@ -25,11 +31,11 @@ k8s-start:
 	minikube start --wait=all
 
 k8s-build:
-	@bash scripts/k8s/build-images.sh
+	@$(BASH) scripts/k8s/build-images.sh
 
 k8s-deploy:
-	@bash scripts/k8s/deploy.sh
-	@bash scripts/k8s/wait-ready.sh
+	@$(BASH) scripts/k8s/deploy.sh
+	@$(BASH) scripts/k8s/wait-ready.sh
 
 k8s-up: k8s-start k8s-build k8s-deploy
 	@echo "==> Stack no ar. Use 'make k8s-status' para ver os pods."
@@ -38,7 +44,7 @@ k8s-status:
 	kubectl get pods,deployments,services,configmaps,secrets -n $(NAMESPACE)
 
 k8s-ingress:
-	@bash scripts/k8s/ingress.sh
+	@$(BASH) scripts/k8s/ingress.sh
 
 k8s-down:
 	@echo "==> Removendo o namespace $(NAMESPACE)"
