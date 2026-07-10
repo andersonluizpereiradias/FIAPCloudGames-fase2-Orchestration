@@ -18,7 +18,8 @@ Repos dos servicos:
 - catalog-api: https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-CatalogAPI
 - payments-api: https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-PaymentsAPI
 - notifications-api: https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-NotificationsAPI
-- contracts: https://github.com/pdelfino0/fcg-contracts
+
+> `FiapCloudGames.Contracts` (https://github.com/pdelfino0/fcg-contracts) e o pacote com as classes de evento compartilhadas entre os servicos. E consumido via **NuGet** (`PackageReference` no `.csproj` de cada servico), **nao** precisa ser clonado localmente para rodar o Compose ou o k8s.
 
 ## Estrutura
 
@@ -33,7 +34,7 @@ FIAPCloudGames-fase2-Orchestration/   # este repo (nome padrao do git clone)
 
 ## Como clonar (layout esperado)
 
-Clone os **6 repos** na **mesma pasta pai**. O `docker-compose` assume os nomes padrao gerados pelo GitHub:
+Clone os **5 repos** na **mesma pasta pai**. O `docker-compose` assume os nomes padrao gerados pelo GitHub:
 
 ```
 pasta-pai/
@@ -41,8 +42,7 @@ pasta-pai/
 ├── FIAPCloudGames-fase2-UsersAPI/
 ├── FIAPCloudGames-fase2-CatalogAPI/
 ├── FIAPCloudGames-fase2-PaymentsAPI/
-├── FIAPCloudGames-fase2-NotificationsAPI/
-└── fcg-contracts/                        # pacote NuGet (nome do repo no GitHub)
+└── FIAPCloudGames-fase2-NotificationsAPI/
 ```
 
 ```bash
@@ -53,8 +53,9 @@ git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-Us
 git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-CatalogAPI.git
 git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-PaymentsAPI.git
 git clone https://github.com/joao-malvetoni-alta-horizon/FIAPCloudGames-fase2-NotificationsAPI.git
-git clone https://github.com/pdelfino0/fcg-contracts.git
 ```
+
+> Nao e preciso clonar `fcg-contracts`: ele e restaurado como pacote NuGet durante o `dotnet restore`/`docker build` de cada servico.
 
 > Se voce **renomeou** as pastas localmente (ex.: `fcg-users-api`), copie `.env.example` para `.env` e ajuste `USERS_API_PATH`, `CATALOG_API_PATH`, etc.
 
