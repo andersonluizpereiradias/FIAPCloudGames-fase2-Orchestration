@@ -81,6 +81,7 @@ services:
       dockerfile: src/FCG.API/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=paymentsdb;Username=${POSTGRES_USER:-fcg};Password=${POSTGRES_PASSWORD:-fcg123}"
       RabbitMq__Host: rabbitmq
       RabbitMq__Port: "5672"
       RabbitMq__Username: ${RABBITMQ_USER:-fcg}
@@ -89,12 +90,15 @@ services:
     ports:
       - "8083:8080"
     depends_on:
-      rabbitmq: { condition: service_healthy }   # SEM postgres: pagamentos nao tem banco
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
 
   notifications-api:
     build:
-      context: ${NOTIFICATIONS_API_PATH:-../FIAPCloudGames-fase2-NotificationsAPI}
-      dockerfile: NotificationsAPI/src/Notifications.API/Dockerfile
+      # O Dockerfile faz `COPY . .` e restaura `src/Notifications.API/...`, entao o
+      # contexto tem de ser a pasta NotificationsAPI/ -- nao a raiz do repo.
+      context: ${NOTIFICATIONS_API_PATH:-../FIAPCloudGames-fase2-NotificationsAPI}/NotificationsAPI
+      dockerfile: src/Notifications.API/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: "Host=postgres;Database=notificationsdb;Username=${POSTGRES_USER:-fcg};Password=${POSTGRES_PASSWORD:-fcg123}"
