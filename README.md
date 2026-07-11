@@ -109,7 +109,7 @@ docker build -t fcg/catalog-api:1.0 ../FIAPCloudGames-fase2-CatalogAPI -f ../FIA
 minikube image load fcg/catalog-api:1.0
 docker build -t fcg/payments-api:1.0 ../FIAPCloudGames-fase2-PaymentsAPI -f ../FIAPCloudGames-fase2-PaymentsAPI/src/FCG.API/Dockerfile
 minikube image load fcg/payments-api:1.0
-docker build -t fcg/notifications-api:1.0 ../FIAPCloudGames-fase2-NotificationsAPI -f ../FIAPCloudGames-fase2-NotificationsAPI/NotificationsAPI/src/Notifications.API/Dockerfile
+docker build -t fcg/notifications-api:1.0 ../FIAPCloudGames-fase2-NotificationsAPI/NotificationsAPI -f ../FIAPCloudGames-fase2-NotificationsAPI/NotificationsAPI/src/Notifications.API/Dockerfile
 minikube image load fcg/notifications-api:1.0
 
 # Aplica tudo (a numeracao garante a ordem)

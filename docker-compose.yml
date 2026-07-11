@@ -95,8 +95,10 @@ services:
 
   notifications-api:
     build:
-      context: ${NOTIFICATIONS_API_PATH:-../FIAPCloudGames-fase2-NotificationsAPI}
-      dockerfile: NotificationsAPI/src/Notifications.API/Dockerfile
+      # O Dockerfile faz `COPY . .` e restaura `src/Notifications.API/...`, entao o
+      # contexto tem de ser a pasta NotificationsAPI/ -- nao a raiz do repo.
+      context: ${NOTIFICATIONS_API_PATH:-../FIAPCloudGames-fase2-NotificationsAPI}/NotificationsAPI
+      dockerfile: src/Notifications.API/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: "Host=postgres;Database=notificationsdb;Username=${POSTGRES_USER:-fcg};Password=${POSTGRES_PASSWORD:-fcg123}"

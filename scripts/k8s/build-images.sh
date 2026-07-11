@@ -35,7 +35,7 @@ docker build -t fcg/payments-api:1.0 "$PAYMENTS_API_PATH" -f "$PAYMENTS_API_PATH
 minikube image load fcg/payments-api:1.0
 
 echo "==> [4/4] notifications-api"
-docker build -t fcg/notifications-api:1.0 "$NOTIFICATIONS_API_PATH" -f "$NOTIFICATIONS_API_PATH/NotificationsAPI/src/Notifications.API/Dockerfile"
+docker build -t fcg/notifications-api:1.0 "$NOTIFICATIONS_API_PATH/NotificationsAPI" -f "$NOTIFICATIONS_API_PATH/NotificationsAPI/src/Notifications.API/Dockerfile"
 minikube image load fcg/notifications-api:1.0
 
 echo "==> Imagens buildadas e carregadas no Minikube."
