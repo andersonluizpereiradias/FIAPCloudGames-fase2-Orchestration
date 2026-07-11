@@ -10,7 +10,7 @@ Repositorio de **orquestracao** da FIAP Cloud Games (Fase 2). Concentra a infrae
 |---|---|:---:|:---:|
 | users-api | Cadastro, login (JWT), autorizacao | PostgreSQL | Sim |
 | catalog-api | CRUD de jogos, inicia compra, biblioteca | PostgreSQL | Sim |
-| payments-api | Simula pagamento (consumidor de eventos) | Nao | So `/health` |
+| payments-api | Simula pagamento (consumidor de eventos) | PostgreSQL | So `/health` |
 | notifications-api | "Envia" e-mails (log) | PostgreSQL | So `/health` |
 
 Repos dos servicos:
@@ -25,9 +25,9 @@ Repos dos servicos:
 
 ```
 FIAPCloudGames-fase2-Orchestration/   # este repo (nome padrao do git clone)
-├── docker-compose.yml   # RabbitMQ + Postgres(3 bancos) + 4 servicos
+├── docker-compose.yml   # RabbitMQ + Postgres(4 bancos) + 4 servicos
 ├── .env.example         # variaveis do Compose (sem valores reais)
-├── db/init.sql          # cria catalogdb e notificationsdb
+├── db/init.sql          # cria catalogdb, notificationsdb e paymentsdb
 ├── k8s/                 # manifestos agregados (kubectl apply -f k8s/)
 └── templates/           # modelos de Dockerfile e /k8s por servico
 ```
@@ -175,13 +175,13 @@ O painel de gestão do RabbitMQ também sai pelo mesmo túnel, em `http://rabbit
 
 | Variavel | users | catalog | payments | notifications | Origem |
 |---|:---:|:---:|:---:|:---:|---|
-| `ConnectionStrings__DefaultConnection` | Sim | Sim | — | Sim | Secret |
+| `ConnectionStrings__DefaultConnection` | Sim | Sim | Sim | Sim | Secret |
 | `ConnectionStrings__RabbitMqConnection` | — | Sim | — | — | Secret |
 | `RabbitMq__Host` | Sim | — | Sim | Sim | ConfigMap |
 | `RabbitMq__Password` | Sim | — | Sim | Sim | Secret |
 | `JwtSettings__SecretKey` | Sim | Sim | — | — | Secret |
 | `ASPNETCORE_ENVIRONMENT` | Sim | Sim | Sim | Sim | ConfigMap |
 
-> **Nota:** o `catalog-api` usa `ConnectionStrings__RabbitMqConnection` (URI `amqp://`) no lugar de `RabbitMq__*`. `users` e `catalog` compartilham a mesma `JwtSettings__SecretKey`. `payments` nao tem banco nem JWT.
+> **Nota:** o `catalog-api` usa `ConnectionStrings__RabbitMqConnection` (URI `amqp://`) no lugar de `RabbitMq__*`. `users` e `catalog` compartilham a mesma `JwtSettings__SecretKey`. `payments` tem banco proprio (`paymentsdb`), mas nao usa JWT.
 
 > **Secret** e apenas base64 (nao e cofre). Nao comite valores reais.
